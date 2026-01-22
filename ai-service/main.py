@@ -1,16 +1,20 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import random
 
-app = FastAPI()
+app = FastAPI(title="AI Insight Service")
 
-class Input(BaseModel):
+class InputText(BaseModel):
     text: str
 
 @app.post("/analyze")
-def analyze(data: Input):
+def analyze(data: InputText):
+    risk = round(random.uniform(0.3, 0.9), 2)
+
     return {
-        "summary": "AI generated summary",
-        "risk_score": 0.68,
-        "sentiment": "negative",
-        "topics": ["compliance", "finance"]
+        "summary": "This document discusses compliance risks and financial exposure.",
+        "risk_score": risk,
+        "sentiment": "negative" if risk > 0.6 else "neutral",
+        "topics": ["compliance", "finance", "risk"],
+        "confidence": round(random.uniform(0.7, 0.95), 2),
     }

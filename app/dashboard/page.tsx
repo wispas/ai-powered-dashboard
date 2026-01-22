@@ -1,52 +1,32 @@
 "use client";
 
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-const mockTrend = [
-  { date: "Mon", risk: 0.4 },
-  { date: "Tue", risk: 0.6 },
-  { date: "Wed", risk: 0.5 },
-  { date: "Thu", risk: 0.8 },
-  { date: "Fri", risk: 0.7 },
-];
+import { getAiResult } from "@/lib/aiStore";
 
 export default function DashboardPage() {
+  const result = getAiResult();
+
+  if (!result) {
+    return (
+      <p className="text-gray-500">
+        No analysis data available. Please upload a document.
+      </p>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <h2 className="text-3xl font-bold">Dashboard</h2>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Kpi title="Risk Score" value="0.73" />
-        <Kpi title="Sentiment" value="Negative" />
-        <Kpi title="Documents Analyzed" value="12" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Kpi title="Risk Score" value={result.risk_score.toString()} />
+        <Kpi title="Sentiment" value={result.sentiment} />
+        <Kpi title="Confidence" value={result.confidence.toString()} />
+        <Kpi title="Topics" value={result.topics.length.toString()} />
       </div>
 
-      {/* Chart */}
       <div className="bg-white p-6 rounded-xl shadow">
-        <h3 className="text-xl font-semibold mb-4">
-          Risk Trend (Last 7 Days)
-        </h3>
-
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={mockTrend}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="risk"
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <h3 className="text-xl font-semibold mb-2">AI Summary</h3>
+        <p className="text-gray-700">{result.summary}</p>
       </div>
     </div>
   );
