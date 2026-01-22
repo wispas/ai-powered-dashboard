@@ -9,7 +9,7 @@ class Input(BaseModel):
 @app.post("/analyze")
 def analyze(data: Input):
     return {
-        "summary": "AI generated summaries",
+        "summary": "AI generated summary",
         "risk_score": 0.68,
         "sentiment": "negative",
         "topics": ["compliance", "finance"]
