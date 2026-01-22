@@ -40,4 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Python virtual environment
+ai-service/venv/
+
 /app/generated/prisma
