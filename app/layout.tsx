@@ -22,6 +22,9 @@ export default function RootLayout({
             <a href="/upload" className="hover:text-black">
               Upload
             </a>
+            <a href="/documents" className="hover:text-black">
+              Documents
+            </a>
             <a href="/dashboard" className="hover:text-black">
               Dashboard
             </a>
