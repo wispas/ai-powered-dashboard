@@ -1,6 +1,17 @@
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function DocumentsPage() {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+        return (
+          <p className="text-gray-400">
+            Please log in to view your analyzed documents.
+          </p>
+        );
+      }
     const analyses: {
         id: string;
         createdAt: Date;
@@ -9,6 +20,7 @@ export default async function DocumentsPage() {
         confidence: number;
         summary: string;
       }[] = await prisma.analysis.findMany({
+        where: { userId: session.user.id },
         orderBy: { createdAt: "desc" },
         select: {
           id: true,

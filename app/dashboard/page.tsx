@@ -2,11 +2,24 @@ import { prisma } from "@/lib/prisma";
 import RiskTrendChart from "@/components/charts/RiskTrendChart";
 import SentimentPieChart from "@/components/charts/SentimentPieChart";
 import ConfidenceTrendChart from "@/components/charts/ConfidenceTrendChart";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 
 export default async function DashboardPage() {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+        redirect("/login");
+      }
+      
+    const userId = session.user.id;
+
   const latest = await prisma.analysis.findFirst({
+    where: { userId },
     orderBy: { createdAt: "desc" },
   });
 
@@ -16,6 +29,7 @@ export default async function DashboardPage() {
     sentiment: string;
     confidence: number;
   }[] = await prisma.analysis.findMany({
+    where: { userId },
     orderBy: { createdAt: "asc" },
     select: {
       createdAt: true,

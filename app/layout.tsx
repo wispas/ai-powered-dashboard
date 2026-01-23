@@ -1,41 +1,31 @@
 import "./globals.css";
 import Link from "next/link";
+import LogoutButton from "@/components/LogoutButton";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-900">
-      <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="font-bold text-xl text-gray-900">
+      <body className="text-gray-900">
+        <header className="flex justify-between items-center px-6 py-4 bg-white shadow text-gray-900">
+          <h1 className="text-xl font-bold text-gray-900">
             AI Insight Dashboard
           </h1>
 
-          <div className="flex gap-6 text-gray-700 font-medium">
-            <a href="/" className="hover:text-black">
-              Home
-            </a>
-            <a href="/upload" className="hover:text-black">
-              Upload
-            </a>
-            <a href="/documents" className="hover:text-black">
-              Documents
-            </a>
-            <a href="/dashboard" className="hover:text-black">
+          <nav className="flex items-center gap-6">
+            <Link href="/dashboard" className="text-gray-800 hover:text-black">
               Dashboard
-            </a>
-          </div>
-        </div>
-      </nav>
+            </Link>
+            <Link href="/upload" className="text-gray-800 hover:text-black">
+              Upload
+            </Link>
+            <Link href="/documents" className="text-gray-800 hover:text-black">
+              Documents
+            </Link>
+            <LogoutButton />
+          </nav>
+        </header>
 
-
-        <main className="max-w-7xl mx-auto px-6 py-8">
-          {children}
-        </main>
+        <main className="p-6 text-gray-900">{children}</main>
       </body>
     </html>
   );
