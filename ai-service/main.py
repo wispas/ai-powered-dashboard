@@ -1,31 +1,64 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from transformers import pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
 
-app = FastAPI()
+app = FastAPI(title="AI Insight Service")
+
+# Load models once (IMPORTANT)
+sentiment_analyzer = pipeline(
+    "sentiment-analysis",
+    model="distilbert-base-uncased-finetuned-sst-2-english"
+)
+
+risk_classifier = pipeline(
+    "zero-shot-classification",
+    model="facebook/bart-large-mnli"
+)
 
 class InputText(BaseModel):
     text: str
 
-RISK_KEYWORDS = ["risk", "exposure", "compliance", "regulatory", "penalty", "loss"]
+RISK_LABELS = [
+    "financial risk",
+    "compliance risk",
+    "operational risk",
+    "legal risk"
+]
 
 @app.post("/analyze")
 def analyze(data: InputText):
-    text_lower = data.text.lower()
+    text = data.text
 
-    hits = sum(1 for k in RISK_KEYWORDS if k in text_lower)
+    # 1️⃣ Sentiment
+    sentiment_result = sentiment_analyzer(text)[0]
+    sentiment = sentiment_result["label"].lower()
+    confidence = round(sentiment_result["score"], 2)
 
-    risk_score = min(0.2 + hits * 0.15, 0.95)
-
-    sentiment = (
-        "negative" if risk_score > 0.6
-        else "neutral" if risk_score > 0.4
-        else "positive"
+    # 2️⃣ Risk classification (semantic)
+    risk_result = risk_classifier(
+        text,
+        candidate_labels=RISK_LABELS
     )
 
+    risk_score = round(float(max(risk_result["scores"])), 2)
+    topics = [
+        label.split()[0]
+        for label, score in zip(
+            risk_result["labels"],
+            risk_result["scores"]
+        )
+        if score > 0.3
+    ]
+
+    # 3️⃣ Summary (simple extractive for now)
+    summary = text[:300] + "..." if len(text) > 300 else text
+
     return {
-        "summary": data.text,
-        "risk_score": round(risk_score, 2),
+        "summary": summary,
+        "risk_score": risk_score,
         "sentiment": sentiment,
-        "topics": [k for k in RISK_KEYWORDS if k in text_lower],
-        "confidence": 0.8
+        "confidence": confidence,
+        "topics": topics
     }

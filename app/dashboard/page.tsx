@@ -67,6 +67,14 @@ export default async function DashboardPage() {
         <Kpi title="Confidence" value={latest.confidence.toString()} />
         <Kpi title="Total Analyses" value={history.length.toString()} />
       </div>
+      {/* AI Summary */}
+        <div className="bg-white p-6 rounded-xl shadow">
+            <h3 className="text-xl font-semibold mb-2">AI Summary</h3>
+            <p className="text-gray-800 leading-relaxed">
+                {latest.summary}
+            </p>
+        </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <RiskTrendChart data={chartHistory} />
@@ -89,6 +97,7 @@ function Kpi({ title, value }: { title: string; value: string }) {
     </div>
   );
 }
+
 
 
 
