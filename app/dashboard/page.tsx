@@ -1,18 +1,42 @@
 import { prisma } from "@/lib/prisma";
 import RiskTrendChart from "@/components/charts/RiskTrendChart";
+import SentimentPieChart from "@/components/charts/SentimentPieChart";
+
 
 export default async function DashboardPage() {
   const latest = await prisma.analysis.findFirst({
     orderBy: { createdAt: "desc" },
   });
 
-  const history = await prisma.analysis.findMany({
+  const history: {
+    createdAt: Date;
+    riskScore: number;
+    sentiment: string;
+  }[] = await prisma.analysis.findMany({
     orderBy: { createdAt: "asc" },
     select: {
       createdAt: true,
       riskScore: true,
+      sentiment: true,
     },
   });
+  const chartHistory = history.map((item) => ({
+    createdAt: item.createdAt.toISOString(),
+    riskScore: item.riskScore,
+  }));
+
+  // Prepare sentiment counts
+  const sentimentCounts = history.reduce(
+    (acc: Record<string, number>, item) => {
+      acc[item.sentiment] = (acc[item.sentiment] ?? 0) + 1;
+      return acc;
+    },
+    {}
+  );
+  
+  
+  
+  
 
   if (!latest) {
     return (
@@ -34,8 +58,12 @@ export default async function DashboardPage() {
         <Kpi title="Total Analyses" value={history.length.toString()} />
       </div>
 
-      {/* Charts */}
-      <RiskTrendChart data={history} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <RiskTrendChart data={chartHistory} />
+        <SentimentPieChart data={sentimentCounts} />
+      </div>
+
+     {/* Charts */}
     </div>
   );
 }
@@ -48,3 +76,6 @@ function Kpi({ title, value }: { title: string; value: string }) {
     </div>
   );
 }
+
+
+
