@@ -1,8 +1,17 @@
 import { prisma } from "@/lib/prisma";
+import RiskTrendChart from "@/components/charts/RiskTrendChart";
 
 export default async function DashboardPage() {
   const latest = await prisma.analysis.findFirst({
     orderBy: { createdAt: "desc" },
+  });
+
+  const history = await prisma.analysis.findMany({
+    orderBy: { createdAt: "asc" },
+    select: {
+      createdAt: true,
+      riskScore: true,
+    },
   });
 
   if (!latest) {
@@ -17,17 +26,16 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <h2 className="text-3xl font-bold">Dashboard</h2>
 
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Kpi title="Risk Score" value={latest.riskScore.toString()} />
         <Kpi title="Sentiment" value={latest.sentiment} />
         <Kpi title="Confidence" value={latest.confidence.toString()} />
-        <Kpi title="Topics" value={latest.topics.length.toString()} />
+        <Kpi title="Total Analyses" value={history.length.toString()} />
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow">
-        <h3 className="text-xl font-semibold mb-2">AI Summary</h3>
-        <p className="text-gray-700">{latest.summary}</p>
-      </div>
+      {/* Charts */}
+      <RiskTrendChart data={history} />
     </div>
   );
 }
