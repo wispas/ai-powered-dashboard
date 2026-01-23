@@ -1,11 +1,11 @@
-"use client";
+import { prisma } from "@/lib/prisma";
 
-import { getAiResult } from "@/lib/aiStore";
+export default async function DashboardPage() {
+  const latest = await prisma.analysis.findFirst({
+    orderBy: { createdAt: "desc" },
+  });
 
-export default function DashboardPage() {
-  const result = getAiResult();
-
-  if (!result) {
+  if (!latest) {
     return (
       <p className="text-gray-500">
         No analysis data available. Please upload a document.
@@ -18,15 +18,15 @@ export default function DashboardPage() {
       <h2 className="text-3xl font-bold">Dashboard</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Kpi title="Risk Score" value={result.risk_score.toString()} />
-        <Kpi title="Sentiment" value={result.sentiment} />
-        <Kpi title="Confidence" value={result.confidence.toString()} />
-        <Kpi title="Topics" value={result.topics.length.toString()} />
+        <Kpi title="Risk Score" value={latest.riskScore.toString()} />
+        <Kpi title="Sentiment" value={latest.sentiment} />
+        <Kpi title="Confidence" value={latest.confidence.toString()} />
+        <Kpi title="Topics" value={latest.topics.length.toString()} />
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow">
         <h3 className="text-xl font-semibold mb-2">AI Summary</h3>
-        <p className="text-gray-700">{result.summary}</p>
+        <p className="text-gray-700">{latest.summary}</p>
       </div>
     </div>
   );
