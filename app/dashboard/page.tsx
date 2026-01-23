@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import RiskTrendChart from "@/components/charts/RiskTrendChart";
 import SentimentPieChart from "@/components/charts/SentimentPieChart";
+import ConfidenceTrendChart from "@/components/charts/ConfidenceTrendChart";
+
 
 
 export default async function DashboardPage() {
@@ -12,18 +14,22 @@ export default async function DashboardPage() {
     createdAt: Date;
     riskScore: number;
     sentiment: string;
+    confidence: number;
   }[] = await prisma.analysis.findMany({
     orderBy: { createdAt: "asc" },
     select: {
       createdAt: true,
       riskScore: true,
       sentiment: true,
+      confidence: true,
     },
   });
+  
   const chartHistory = history.map((item) => ({
     createdAt: item.createdAt.toISOString(),
     riskScore: item.riskScore,
   }));
+ 
 
   // Prepare sentiment counts
   const sentimentCounts = history.reduce(
@@ -33,6 +39,10 @@ export default async function DashboardPage() {
     },
     {}
   );
+  const confidenceHistory = history.map((item) => ({
+    createdAt: item.createdAt.toISOString(),
+    confidence: item.confidence,
+  }));
   
   
   
@@ -61,6 +71,9 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <RiskTrendChart data={chartHistory} />
         <SentimentPieChart data={sentimentCounts} />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ConfidenceTrendChart data={confidenceHistory} />
       </div>
 
      {/* Charts */}
