@@ -20,6 +20,7 @@ model Analysis {
   riskScore  Float
   sentiment  String
   confidence Float
+  opportunityScore Float @default(0)
   topics     String[] // Postgres array
   createdAt  DateTime @default(now())
 

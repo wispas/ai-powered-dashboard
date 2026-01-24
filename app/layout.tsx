@@ -1,6 +1,8 @@
 import "./globals.css";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
+import ThemeToggle from "@/components/ThemeToggle";
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,6 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               Documents
             </Link>
             <LogoutButton />
+            <nav className="flex items-center gap-6">
+              <ThemeToggle />
+              <LogoutButton />
+            </nav>
+
           </nav>
         </header>
 

@@ -52,6 +52,9 @@ def analyze(data: InputText):
         if score > 0.3
     ]
 
+    opportunity_score = round((1 - risk_score) * confidence, 2) #Opportunity scores calculation
+
+
     # 3️⃣ Summary (simple extractive for now)
     summary = text[:300] + "..." if len(text) > 300 else text
 
@@ -60,5 +63,6 @@ def analyze(data: InputText):
         "risk_score": risk_score,
         "sentiment": sentiment,
         "confidence": confidence,
+        "opportunity_score": opportunity_score,
         "topics": topics
     }

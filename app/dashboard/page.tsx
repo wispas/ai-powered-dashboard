@@ -75,11 +75,12 @@ export default async function DashboardPage() {
       <h2 className="text-3xl font-bold">Dashboard</h2>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Kpi title="Risk Score" value={latest.riskScore.toString()} />
         <Kpi title="Sentiment" value={latest.sentiment} />
         <Kpi title="Confidence" value={latest.confidence.toString()} />
         <Kpi title="Total Analyses" value={history.length.toString()} />
+        <Kpi title="Opportunity Score" value={(latest.opportunityScore ?? 0).toString()} />
       </div>
       {/* AI Summary */}
         <div className="bg-white p-6 rounded-xl shadow">

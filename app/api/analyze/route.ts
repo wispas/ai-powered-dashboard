@@ -33,6 +33,7 @@ export async function POST(req: Request) {
       riskScore: aiData.risk_score,
       sentiment: aiData.sentiment,
       confidence: aiData.confidence,
+      opportunityScore: aiData.opportunity_score,
       topics: aiData.topics,
       userId: user!.id,
     },
