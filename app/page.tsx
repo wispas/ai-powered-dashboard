@@ -2,45 +2,51 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-      <div className="max-w-4xl text-center">
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">
-          AI-Powered Insight & Risk Analytics
-        </h1>
+    <main className="min-h-screen flex items-center justify-center bg-background px-6">
+      <div className="max-w-5xl text-center space-y-12">
+        {/* Hero */}
+        <div className="space-y-6">
+          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
+            AI-Powered Insight & <span className="text-blue-600">Risk Analytics</span>
+          </h1>
 
-        <p className="text-lg text-gray-600 mb-10">
-          Analyze documents using AI, detect risks, generate insights, and
-          visualize trends — all in one intelligent dashboard.
-        </p>
+          <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-300">
+            Analyze company documents and real estate assets using AI to
+            identify risks, generate opportunity insights, and visualize
+            trends through interactive dashboards and maps.
+          </p>
+        </div>
 
-        <div className="flex justify-center gap-4">
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             href="/dashboard"
-            className="px-6 py-3 bg-black text-white rounded-lg text-lg hover:bg-gray-800 transition"
+            className="px-8 py-3 bg-black text-white rounded-lg text-lg font-medium hover:bg-gray-800 transition"
           >
-            Go to Dashboard
+            Open Dashboard
           </Link>
 
           <Link
             href="/upload"
-            className="px-6 py-3 border border-gray-300 rounded-lg text-lg hover:bg-gray-100 transition"
+            className="px-8 py-3 border border-gray-300 rounded-lg text-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             Upload Document
           </Link>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
           <Feature
-            title="AI Analysis"
-            description="Automatic summarization, sentiment analysis, and risk scoring using ML models."
+            title="AI-Driven Analysis"
+            description="Automatic summarization, sentiment detection, and risk & opportunity scoring using machine learning."
           />
           <Feature
-            title="Smart Dashboards"
-            description="Interactive charts, trends, and analytics for better decision making."
+            title="Interactive Dashboards"
+            description="Visualize trends, confidence levels, and risk evolution through charts and analytics."
           />
           <Feature
-            title="Enterprise Ready"
-            description="Inspired by governance & compliance platforms like Diligent AI."
+            title="Real Estate Intelligence"
+            description="Geospatial visualization of property risks using interactive maps for better decision-making."
           />
         </div>
       </div>
@@ -56,9 +62,9 @@ function Feature({
   description: string;
 }) {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h3 className="text-xl font-semibold mb-2 text-gray-900">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-600 dark:text-gray-400">{description}</p>
     </div>
   );
 }

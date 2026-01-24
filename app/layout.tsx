@@ -3,37 +3,86 @@ import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import ThemeToggle from "@/components/ThemeToggle";
 
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className="text-gray-900">
-        <header className="flex justify-between items-center px-6 py-4 bg-white shadow text-gray-900">
-          <h1 className="text-xl font-bold text-gray-900">
-            AI Insight Dashboard
-          </h1>
+      <body className="bg-background text-foreground">
+        {/* Header */}
+        <header className="border-b bg-white dark:bg-gray-900">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="flex h-16 items-center justify-between">
+              {/* Logo */}
+              <h1 className="text-lg sm:text-xl font-bold">
+                AI Insight Dashboard
+              </h1>
 
-          <nav className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-gray-800 hover:text-black">
-              Dashboard
-            </Link>
-            <Link href="/upload" className="text-gray-800 hover:text-black">
-              Upload
-            </Link>
-            <Link href="/documents" className="text-gray-800 hover:text-black">
-              Documents
-            </Link>
-            <LogoutButton />
-            <nav className="flex items-center gap-6">
-              <ThemeToggle />
-              <LogoutButton />
-            </nav>
+              {/* Desktop Nav */}
+              <nav className="hidden md:flex items-center gap-6">
+                <NavLink href="/dashboard">Dashboard</NavLink>
+                <NavLink href="/upload">Upload</NavLink>
+                <NavLink href="/documents">Documents</NavLink>
+                <NavLink href="/properties/add">Add Property</NavLink>
+                <ThemeToggle />
+                <LogoutButton />
+              </nav>
 
-          </nav>
+              {/* Mobile Menu */}
+              <MobileMenu />
+            </div>
+          </div>
         </header>
 
-        <main className="p-6 text-gray-900">{children}</main>
+        {/* Page Content */}
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
+          {children}
+        </main>
       </body>
     </html>
+  );
+}
+
+/* ---------------- Helpers ---------------- */
+
+function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="text-sm font-medium text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white transition"
+    >
+      {children}
+    </Link>
+  );
+}
+
+/* ---------------- Mobile Menu ---------------- */
+
+function MobileMenu() {
+  return (
+    <details className="md:hidden relative">
+      <summary className="list-none cursor-pointer text-sm font-medium">
+        ☰
+      </summary>
+
+      <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white dark:bg-gray-900 shadow-lg z-50">
+        <nav className="flex flex-col p-2 gap-2">
+          <NavLink href="/dashboard">Dashboard</NavLink>
+          <NavLink href="/upload">Upload</NavLink>
+          <NavLink href="/documents">Documents</NavLink>
+          <NavLink href="/properties/add">Add Property</NavLink>
+          <ThemeToggle />
+          <LogoutButton />
+        </nav>
+      </div>
+    </details>
   );
 }

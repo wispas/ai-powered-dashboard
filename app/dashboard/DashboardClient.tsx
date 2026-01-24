@@ -45,6 +45,7 @@ export default function DashboardClient({
 
       <ConfidenceTrendChart data={confidenceHistory} />
 
+
       <div className="bg-white p-6 rounded-xl shadow">
         <h3 className="text-xl font-semibold mb-4">
           Real Estate Risk Map
