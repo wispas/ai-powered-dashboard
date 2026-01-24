@@ -21,7 +21,7 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             href="/dashboard"
-            className="px-8 py-3 bg-black text-white rounded-lg text-lg font-medium hover:bg-gray-800 transition"
+            className="px-8 py-3 border border-gray-300 rounded-lg text-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             Open Dashboard
           </Link>
@@ -35,7 +35,7 @@ export default function HomePage() {
         </div>
 
         {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 ">
           <Feature
             title="AI-Driven Analysis"
             description="Automatic summarization, sentiment detection, and risk & opportunity scoring using machine learning."
@@ -62,9 +62,15 @@ function Feature({
   description: string;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400">{description}</p>
+    <div className="p-6 rounded-xl shadow-sm border border-gray-200"
+         style={{ backgroundColor: "var(--background)" }}>
+      <h3 className="text-xl font-semibold mb-2">
+        {title}
+      </h3>
+      <p className="opacity-80">
+        {description}
+      </p>
     </div>
   );
 }
+

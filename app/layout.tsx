@@ -12,7 +12,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-background text-foreground">
         {/* Header */}
-        <header className="border-b bg-white dark:bg-gray-900">
+        <header className="border-b bg-background">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="flex h-16 items-center justify-between">
               {/* Logo */}
@@ -45,6 +45,7 @@ export default function RootLayout({
   );
 }
 
+
 /* ---------------- Helpers ---------------- */
 
 function NavLink({
@@ -57,12 +58,13 @@ function NavLink({
   return (
     <Link
       href={href}
-      className="text-sm font-medium text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white transition"
+      className="text-sm font-medium opacity-80 hover:opacity-100 transition"
     >
       {children}
     </Link>
   );
 }
+
 
 /* ---------------- Mobile Menu ---------------- */
 
@@ -73,7 +75,7 @@ function MobileMenu() {
         ☰
       </summary>
 
-      <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white dark:bg-gray-900 shadow-lg z-50">
+      <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-background shadow-lg z-50">
         <nav className="flex flex-col p-2 gap-2">
           <NavLink href="/dashboard">Dashboard</NavLink>
           <NavLink href="/upload">Upload</NavLink>
