@@ -3,7 +3,7 @@ import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import MobileMenu from "@/components/MobileMenu";
-
+import AuthNav from "@/components/AuthNav";
 
 export default function RootLayout({
   children,
@@ -32,7 +32,7 @@ export default function RootLayout({
                 <NavLink href="/properties/add">Add Property</NavLink>
                 <NavLink href="/properties">Properties</NavLink>
                 <ThemeToggle />
-                <LogoutButton />
+                <AuthNav />
               </nav>
 
               {/* Mobile Menu */}
@@ -74,23 +74,4 @@ function NavLink({
 /* ---------------- Mobile Menu ---------------- */
 <MobileMenu />
 
-// function MobileMenu() {
-//   return (
-//     <details className="md:hidden relative">
-//       <summary className="list-none cursor-pointer text-sm font-medium">
-//         ☰
-//       </summary>
 
-//       <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-background shadow-lg z-50">
-//         <nav className="flex flex-col p-2 gap-2">
-//           <NavLink href="/dashboard">Dashboard</NavLink>
-//           <NavLink href="/upload">Upload</NavLink>
-//           <NavLink href="/documents">Documents</NavLink>
-//           <NavLink href="/properties/add">Add Property</NavLink>
-//           <ThemeToggle />
-//           <LogoutButton />
-//         </nav>
-//       </div>
-//     </details>
-//   );
-// }

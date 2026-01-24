@@ -24,27 +24,37 @@ model Analysis {
   topics     String[] // Postgres array
   createdAt  DateTime @default(now())
 
-  userId String
+  userId Int
   user   User   @relation(fields: [userId], references: [id])
 }
 
-model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  password  String
-  analyses  Analysis[]
-  createdAt DateTime   @default(now())
+enum Role {
+  USER
+  ADMIN
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  analyses  Analysis[]
+  properties Property[] 
+  createdAt DateTime @default(now())
+}
+
+
 model Property {
-  id        Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
   city      String
   latitude  Float
   longitude Float
   value     Float
   riskScore Float
-  userId    String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
+
 
