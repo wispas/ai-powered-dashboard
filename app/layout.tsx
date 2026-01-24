@@ -30,6 +30,7 @@ export default function RootLayout({
                 <NavLink href="/upload">Upload</NavLink>
                 <NavLink href="/documents">Documents</NavLink>
                 <NavLink href="/properties/add">Add Property</NavLink>
+                <NavLink href="/properties">Properties</NavLink>
                 <ThemeToggle />
                 <LogoutButton />
               </nav>
