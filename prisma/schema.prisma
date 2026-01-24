@@ -36,3 +36,15 @@ model User {
   createdAt DateTime   @default(now())
 }
 
+model Property {
+  id        String   @id @default(uuid())
+  name      String
+  city      String
+  latitude  Float
+  longitude Float
+  value     Float
+  riskScore Float
+  userId    String
+  createdAt DateTime @default(now())
+}
+

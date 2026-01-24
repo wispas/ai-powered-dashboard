@@ -1,34 +1,35 @@
 import { prisma } from "@/lib/prisma";
-import RiskTrendChart from "@/components/charts/RiskTrendChart";
-import SentimentPieChart from "@/components/charts/SentimentPieChart";
-import ConfidenceTrendChart from "@/components/charts/ConfidenceTrendChart";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import DashboardClient from "./DashboardClient";
 
-
+type AnalysisHistoryItem = {
+    createdAt: Date;
+    riskScore: number;
+    sentiment: string;
+    confidence: number;
+  };
 export default async function DashboardPage() {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id) {
-        redirect("/login");
-      }
-      
-    const userId = session.user.id;
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const userId = session.user.id;
 
   const latest = await prisma.analysis.findFirst({
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
 
-  const history: {
-    createdAt: Date;
-    riskScore: number;
-    sentiment: string;
-    confidence: number;
-  }[] = await prisma.analysis.findMany({
+  if (!latest) {
+    return <p>No analysis data available.</p>;
+  }
+
+  const history: AnalysisHistoryItem[] =
+  await prisma.analysis.findMany({
     where: { userId },
     orderBy: { createdAt: "asc" },
     select: {
@@ -38,81 +39,45 @@ export default async function DashboardPage() {
       confidence: true,
     },
   });
-  
-  const chartHistory = history.map((item) => ({
-    createdAt: item.createdAt.toISOString(),
-    riskScore: item.riskScore,
-  }));
- 
 
-  // Prepare sentiment counts
-  const sentimentCounts = history.reduce(
-    (acc: Record<string, number>, item) => {
+
+  const properties = await prisma.property.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      name: true,
+      latitude: true,
+      longitude: true,
+      riskScore: true,
+    },
+  });
+
+  const chartHistory = history.map((i) => ({
+    createdAt: i.createdAt.toISOString(),
+    riskScore: i.riskScore,
+  }));
+
+  const confidenceHistory = history.map((i) => ({
+    createdAt: i.createdAt.toISOString(),
+    confidence: i.confidence,
+  }));
+
+  const sentimentCounts = history.reduce<Record<string, number>>(
+    (acc, item) => {
       acc[item.sentiment] = (acc[item.sentiment] ?? 0) + 1;
       return acc;
     },
     {}
   );
-  const confidenceHistory = history.map((item) => ({
-    createdAt: item.createdAt.toISOString(),
-    confidence: item.confidence,
-  }));
-  
-  
-  
-  
-
-  if (!latest) {
-    return (
-      <p className="text-gray-500">
-        No analysis data available. Please upload a document.
-      </p>
-    );
-  }
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-3xl font-bold">Dashboard</h2>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <Kpi title="Risk Score" value={latest.riskScore.toString()} />
-        <Kpi title="Sentiment" value={latest.sentiment} />
-        <Kpi title="Confidence" value={latest.confidence.toString()} />
-        <Kpi title="Total Analyses" value={history.length.toString()} />
-        <Kpi title="Opportunity Score" value={(latest.opportunityScore ?? 0).toString()} />
-      </div>
-      {/* AI Summary */}
-        <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-xl font-semibold mb-2">AI Summary</h3>
-            <p className="text-gray-800 leading-relaxed">
-                {latest.summary}
-            </p>
-        </div>
-
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <RiskTrendChart data={chartHistory} />
-        <SentimentPieChart data={sentimentCounts} />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ConfidenceTrendChart data={confidenceHistory} />
-      </div>
-
-     {/* Charts */}
-    </div>
+    <DashboardClient
+      latest={latest}
+      history={history}
+      chartHistory={chartHistory}
+      confidenceHistory={confidenceHistory}
+      sentimentCounts={sentimentCounts}
+      properties={properties}
+    />
   );
 }
-
-function Kpi({ title, value }: { title: string; value: string }) {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow">
-      <p className="text-gray-500">{title}</p>
-      <p className="text-3xl font-bold mt-2">{value}</p>
-    </div>
-  );
-}
-
-
-
-
