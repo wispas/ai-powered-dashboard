@@ -3,17 +3,20 @@
 /* ---------- THEME VARIABLES ---------- */
 :root {
   --background: #ffffff;
-  --foreground: #111827; /* gray-900 */
-  --muted: #f3f4f6;      /* gray-100 */
-  --border: #e5e7eb;     /* gray-200 */
+  --foreground: #0f172a;   /* slate-900 */
+  --muted: #475569;        /* slate-600 */
+  --border: #e5e7eb;
 }
 
 :root[data-theme="dark"] {
-  --background: #0b0f19; /* deep navy */
-  --foreground: #e5e7eb; /* gray-200 */
-  --muted: #111827;      /* gray-900 */
-  --border: #1f2937;     /* gray-800 */
+  --background: #020617;   /* slate-950 */
+  --foreground: #e5e7eb;   /* gray-200 */
+  --muted: #94a3b8;        /* slate-400 */
+  --border: #1e293b;       /* slate-800 */
 }
+
+
+
 
 body {
   background: var(--background);
@@ -96,4 +99,20 @@ th {
 ::-webkit-scrollbar-thumb {
   background-color: rgba(100, 100, 100, 0.4);
   border-radius: 4px;
+}
+
+/* Primary CTA button */
+.btn-primary {
+  @apply relative z-10 bg-white text-blue-700 px-6 py-3 rounded-lg
+         font-medium shadow transition hover:bg-blue-50;
+}
+
+/* Full-width (full-bleed) section utility */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
 }
