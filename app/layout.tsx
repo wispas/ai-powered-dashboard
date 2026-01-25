@@ -1,9 +1,11 @@
 import "./globals.css";
 import Link from "next/link";
-import LogoutButton from "@/components/LogoutButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import MobileMenu from "@/components/MobileMenu";
 import AuthNav from "@/components/AuthNav";
+import Providers from "@/components/Providers";
+import Footer from "@/components/Footer";
+
 
 export default function RootLayout({
   children,
@@ -12,66 +14,40 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-foreground">
-        {/* Header */}
-        <header className="border-b bg-background">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="flex h-16 items-center justify-between">
-              {/* Logo */}
-              <Link href="/" className="hover:opacity-80 transition">
-                <h1 className="text-lg sm:text-xl font-bold">
-                  AI Insight Dashboard
-                </h1>
-              </Link>
+      <body className="bg-background text-foreground antialiased">
+        <Providers>
+          {/* Header */}
+          <header className="sticky top-0 z-50 bg-background border-b">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="flex h-16 items-center justify-between">
+                {/* Logo */}
+                <Link
+                  href="/"
+                  className="text-lg sm:text-xl font-semibold tracking-tight hover:opacity-80 transition"
+                >
+                  AI Insight
+                </Link>
 
-              {/* Desktop Nav */}
-              <nav className="hidden md:flex items-center gap-6">
-                <NavLink href="/dashboard">Dashboard</NavLink>
-                <NavLink href="/upload">Upload</NavLink>
-                <NavLink href="/documents">Documents</NavLink>
-                <NavLink href="/properties/add">Add Property</NavLink>
-                <NavLink href="/properties">Properties</NavLink>
-                <ThemeToggle />
-                <AuthNav />
-              </nav>
+                {/* Desktop Nav */}
+                <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                  <ThemeToggle />
+                  <AuthNav />
+                </nav>
 
-              {/* Mobile Menu */}
-              <MobileMenu />
+                {/* Mobile */}
+                <MobileMenu />
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        {/* Page Content */}
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
-          {children}
-        </main>
+          {/* Content */}
+          <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+            {children}
+          </main>
+          <Footer />
+
+        </Providers>
       </body>
     </html>
   );
 }
-
-
-/* ---------------- Helpers ---------------- */
-
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="text-sm font-medium opacity-80 hover:opacity-100 transition"
-    >
-      {children}
-    </Link>
-  );
-}
-
-
-/* ---------------- Mobile Menu ---------------- */
-<MobileMenu />
-
-
