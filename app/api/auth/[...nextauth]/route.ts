@@ -2,9 +2,15 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import GoogleProvider from "next-auth/providers/google";
+
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -20,7 +26,7 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
       
-        if (!user) return null;
+        if (!user || !user.password) return null;
       
         const isValid = await bcrypt.compare(
           credentials.password,
@@ -32,9 +38,10 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          role: user.role, // ✅ IMPORTANT
+          role: user.role,
         };
       }
+      
       
     }),
   ],
@@ -44,11 +51,35 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+  
+        if (!existingUser) {
+          await prisma.user.create({
+            data: {
+              email: user.email!,
+              role: "USER",
+            },
+          });
+        }
+      }
+      return true;
+    },
+  
     async jwt({ token, user }) {
-      if (user) {
-        token.id = Number(user.id);   // ✅ force number
-        token.email = user.email;
-        token.role = user.role;
+      if (user?.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+  
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.email = dbUser.email;
+          token.role = dbUser.role;
+        }
       }
       return token;
     },
@@ -62,6 +93,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  
   
   
 

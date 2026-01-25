@@ -26,7 +26,7 @@ export default async function PropertiesPage() {
 
         <Link
           href="/properties/add"
-          className="bg-black text-white px-4 py-2 rounded"
+          className="text-white px-4 py-2 rounded"
         >
           + Add Property
         </Link>
