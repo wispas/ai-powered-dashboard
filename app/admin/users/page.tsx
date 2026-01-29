@@ -1,13 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminGuard";
+import DeleteUsersButton from "@/components/users/DeleteUsersButton";
 
 export default async function AdminUsersPage() {
   await requireAdmin();
 
   const users = await prisma.user.findMany({
     include: {
-      analyses: true,
-      properties: true,
+      analyses: true, // ✅ exists
     },
     orderBy: { createdAt: "desc" },
   });
@@ -23,8 +23,8 @@ export default async function AdminUsersPage() {
               <Th>Email</Th>
               <Th>Role</Th>
               <Th>Analyses</Th>
-              <Th>Properties</Th>
               <Th>Joined</Th>
+              <Th>Actions</Th>
             </tr>
           </thead>
 
@@ -36,8 +36,10 @@ export default async function AdminUsersPage() {
                   <RoleBadge role={u.role} />
                 </Td>
                 <Td>{u.analyses.length}</Td>
-                <Td>{u.properties.length}</Td>
                 <Td>{u.createdAt.toLocaleDateString()}</Td>
+                <Td>
+                  <DeleteUsersButton userId={u.id} />
+                </Td>
               </tr>
             ))}
           </tbody>
