@@ -29,14 +29,18 @@ export default function UploadClient() {
       method: "POST",
       body: formData,
     });
-
+    
+    const data = await res.json(); // 👈 get response
+    
+    console.log("API RESPONSE:", data); // 👈 DEBUG
+    
     if (!res.ok) {
-      alert("Error analyzing data");
+      alert("Error: " + (data.error || JSON.stringify(data)));
       setLoading(false);
       return;
     }
 
-    // ✅ after success → dashboard
+    // after success → dashboard
     window.location.href = "/dashboard";
   }
 
