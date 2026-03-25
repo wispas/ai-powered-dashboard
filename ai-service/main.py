@@ -84,33 +84,82 @@ def analyze(data: AnalyzeRequest):
             "topics": topics
         }
 
-    # ================= CSV / TIME SERIES =================
+   # ================= CSV / TIME SERIES =================
     if data.dataType in ["csv", "timeseries"]:
         if not data.csv:
             raise HTTPException(status_code=400, detail="CSV data required")
 
         df = pd.read_csv(io.StringIO(data.csv))
 
-        required_columns = {"revenue", "expenses"}
-        if not required_columns.issubset(df.columns):
-            raise HTTPException(
-                status_code=400,
-                detail="CSV must contain revenue and expenses columns"
-            )
+        #Normalize column names
+        df.columns = [c.lower() for c in df.columns]
 
-        avg_revenue = df["revenue"].mean()
-        avg_expenses = df["expenses"].mean()
+        # Flexible column detection
+        def find_column(possible_names):
+            for col in df.columns:
+                if col in possible_names:
+                    return col
+            return None
 
-        risk_score = round(avg_expenses / avg_revenue, 2)
-        opportunity_score = round(1 - risk_score, 2)
+        revenue_cols = ["revenue", "income", "sales"]
+        expense_cols = ["expenses", "cost", "spending"]
+
+        rev_col = find_column(revenue_cols)
+        exp_col = find_column(expense_cols)
+
+        summary = ""
+        risk_score = 0.5
+        opportunity_score = 0.5
+
+        # Scope detection (important)
+        if "date" in df.columns:
+            data_scope = "time_series"
+        else:
+            data_scope = "structured"
+
+        # Revenue logic
+        if rev_col:
+            revenue_trend = df[rev_col].iloc[-1] - df[rev_col].iloc[0]
+            if revenue_trend > 0:
+                summary += "Revenue is increasing. "
+                opportunity_score += 0.2
+            else:
+                summary += "Revenue is decreasing. "
+                risk_score += 0.2
+        else:
+            summary += "No revenue-related column found. "
+
+        # Expense logic
+        if exp_col:
+            expense_trend = df[exp_col].iloc[-1] - df[exp_col].iloc[0]
+            if expense_trend > 0:
+                summary += "Expenses are increasing. "
+                risk_score += 0.2
+        else:
+            summary += "No expense-related column found. "
+
+        # General analysis (VERY IMPORTANT)
+        numeric_df = df.select_dtypes(include=["number"])
+
+        if not numeric_df.empty:
+            volatility = numeric_df.std().mean()
+            if volatility > 20:
+                summary += "Data shows high volatility. "
+                risk_score += 0.1
+
+        # Normalize values
+        risk_score = min(max(risk_score, 0), 1)
+        opportunity_score = min(max(opportunity_score, 0), 1)
 
         return {
-            "summary": "Time-series financial trend analysis completed.",
+            "data_type": data_scope,
+            "columns_detected": df.columns.tolist(),
+            "summary": summary.strip(),
             "sentiment": "neutral",
-            "risk_score": risk_score,
-            "opportunity_score": opportunity_score,
+            "risk_score": round(risk_score, 2),
+            "opportunity_score": round(opportunity_score, 2),
             "confidence": 0.85,
-            "topics": ["finance", "time-series", "risk"]
+            "topics": ["data-analysis", data_scope]
         }
 
     raise HTTPException(status_code=400, detail="Invalid data type")
