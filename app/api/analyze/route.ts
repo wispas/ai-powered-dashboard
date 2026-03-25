@@ -58,15 +58,21 @@ export async function POST(req: Request) {
   });
 
   if (!aiRes.ok) {
-    const errorText = await aiRes.text();
+    const errorData = await aiRes.json().catch(() => null);
   
-    console.error("FASTAPI ERROR:", errorText);
+    // If FastAPI sends validation error
+    if (errorData?.detail) {
+      return NextResponse.json(
+        {
+          error: errorData.detail, // real message from FastAPI
+        },
+        { status: aiRes.status }
+      );
+    }
   
+    // fallback
     return NextResponse.json(
-      {
-        error: "AI service failed",
-        details: errorText,
-      },
+      { error: "AI service failed" },
       { status: 500 }
     );
   }
