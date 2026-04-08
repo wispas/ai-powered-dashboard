@@ -22,6 +22,7 @@ model Analysis {
   confidence Float
   opportunityScore Float @default(0)
   topics     String[] // Postgres array
+  dataType   String @default("text")
   createdAt  DateTime @default(now())
 
   userId Int

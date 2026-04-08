@@ -88,13 +88,14 @@ export async function POST(req: Request) {
           : dataType === "csv"
           ? "CSV Data Analysis"
           : "Time Series Data Analysis",
-
+  
       summary: aiData.summary,
       sentiment: aiData.sentiment,
       riskScore: aiData.risk_score,
       opportunityScore: aiData.opportunity_score,
       confidence: aiData.confidence,
       topics: aiData.topics,
+      dataType: dataType,
       userId: user.id,
     },
   });
