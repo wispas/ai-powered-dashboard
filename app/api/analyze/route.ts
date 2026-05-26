@@ -90,11 +90,12 @@ export async function POST(req: Request) {
           : "Time Series Data Analysis",
   
       summary: aiData.summary,
-      sentiment: aiData.sentiment,
+      sentiment: aiData.sentiment || "neutral",
       riskScore: aiData.risk_score,
       opportunityScore: aiData.opportunity_score,
       confidence: aiData.confidence,
       topics: aiData.topics,
+      keywords: aiData.keywords || [],
       dataType: dataType,
       userId: user.id,
     },

@@ -22,6 +22,7 @@ model Analysis {
   confidence Float
   opportunityScore Float @default(0)
   topics     String[] // Postgres array
+  keywords   String[] 
   dataType   String @default("text")
   createdAt  DateTime @default(now())
 
@@ -34,11 +35,17 @@ enum Role {
   ADMIN
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
 model User {
   id         Int        @id @default(autoincrement())
   email      String     @unique
   password   String?    
   role       Role       @default(USER)
+  status     UserStatus @default(ACTIVE)
   analyses   Analysis[]
   properties Property[]
   createdAt  DateTime   @default(now())

@@ -1,13 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminGuard";
-import DeleteUsersButton from "@/components/users/DeleteUsersButton";
+import SuspendUserButton from "@/components/users/SuspendUserButton";
 
 export default async function AdminUsersPage() {
   await requireAdmin();
 
   const users = await prisma.user.findMany({
     include: {
-      analyses: true, // ✅ exists
+      analyses: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -22,6 +22,7 @@ export default async function AdminUsersPage() {
             <tr>
               <Th>Email</Th>
               <Th>Role</Th>
+              <Th>Status</Th> {/* ✅ NEW */}
               <Th>Analyses</Th>
               <Th>Joined</Th>
               <Th>Actions</Th>
@@ -32,13 +33,39 @@ export default async function AdminUsersPage() {
             {users.map((u) => (
               <tr key={u.id} className="border-b last:border-0">
                 <Td>{u.email}</Td>
+
                 <Td>
                   <RoleBadge role={u.role} />
                 </Td>
-                <Td>{u.analyses.length}</Td>
-                <Td>{u.createdAt.toLocaleDateString()}</Td>
+
+                {/* ✅ STATUS */}
                 <Td>
-                  <DeleteUsersButton userId={u.id} />
+                  <StatusBadge status={u.status} />
+                </Td>
+
+                {/* ✅ USER STATS */}
+                <Td>
+                  {u.analyses.length} datasets
+                  <div className="text-xs text-gray-500">
+                    Avg Risk:{" "}
+                    {(
+                      u.analyses.reduce(
+                        (sum, a) => sum + a.riskScore,
+                        0
+                      ) / (u.analyses.length || 1)
+                    ).toFixed(2)}
+                  </div>
+                </Td>
+
+                <Td>{u.createdAt.toLocaleDateString()}</Td>
+
+                {/* ✅ ACTIONS */}
+                <Td>
+                  <SuspendUserButton
+                    userId={u.id}
+                    role={u.role}
+                    status={u.status}
+                  />
                 </Td>
               </tr>
             ))}
@@ -49,7 +76,7 @@ export default async function AdminUsersPage() {
   );
 }
 
-/* ---------- UI Helpers ---------- */
+/* ---------- UI ---------- */
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
@@ -76,6 +103,19 @@ function RoleBadge({ role }: { role: string }) {
   return (
     <span className={`px-2 py-1 rounded text-xs font-medium ${color}`}>
       {role}
+    </span>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const color =
+    status === "SUSPENDED"
+      ? "bg-gray-200 text-gray-700"
+      : "bg-green-100 text-green-700";
+
+  return (
+    <span className={`px-2 py-1 rounded text-xs font-medium ${color}`}>
+      {status}
     </span>
   );
 }

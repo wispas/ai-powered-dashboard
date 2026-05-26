@@ -17,6 +17,7 @@ export default function DashboardClient({
   confidenceHistory,
   sentimentCounts,
   properties,
+  recent,
 }: any) {
   return (
     <div className="space-y-8">
@@ -36,6 +37,63 @@ export default function DashboardClient({
       <div className="bg-white p-6 rounded-xl shadow">
         <h3 className="text-xl font-semibold mb-2">AI Summary</h3>
         <p className="text-gray-800">{latest.summary}</p>
+      </div>
+      <div className="bg-white p-6 rounded-xl shadow">
+        <h3 className="text-xl font-semibold mb-2">Keywords (Topic Modeling)</h3>
+
+        {latest.keywords?.length ? (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {latest.keywords.map((k: string, i: number) => (
+              <span
+                key={i}
+                className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">
+            No keywords available
+          </p>
+        )}
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow">
+        <h3 className="text-xl font-semibold mb-4">
+          Recent Analyses (Last 5)
+        </h3>
+
+        <div className="space-y-3">
+          {recent?.map((item: any, index: number) => (
+            <div
+              key={item.id}
+              className="border p-4 rounded-lg hover:bg-gray-50"
+            >
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-gray-500">
+                  {new Date(item.createdAt).toLocaleString()}
+                </p>
+
+                {/* 🔥 Highlight latest */}
+                {index === 0 && (
+                  <span className="text-green-600 text-xs font-semibold">
+                    Latest
+                  </span>
+                )}
+              </div>
+
+              <p className="font-medium mt-1">{item.summary}</p>
+
+              <div className="text-xs text-gray-400 mt-1 flex gap-3">
+                <span>
+                  Type: {item.dataType?.replace("_", " ")}
+                </span>
+                <span>Risk: {item.riskScore}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -10,6 +10,13 @@ type AnalysisHistoryItem = {
     sentiment: string;
     confidence: number;
   };
+
+type AnalysisItem = {
+    id: string;
+    summary: string;
+    dataType: string;
+    createdAt: Date;
+  };
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
 
@@ -27,6 +34,12 @@ export default async function DashboardPage() {
   if (!latest) {
     return <p>No analysis data available.</p>;
   }
+
+  const recent = await prisma.analysis.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 5, // ✅ ONLY LAST 5
+  });
 
   const history: AnalysisHistoryItem[] =
   await prisma.analysis.findMany({
@@ -78,6 +91,7 @@ export default async function DashboardPage() {
       confidenceHistory={confidenceHistory}
       sentimentCounts={sentimentCounts}
       properties={properties}
+      recent={recent} // 
     />
   );
 }

@@ -15,6 +15,11 @@ export default function UploadClient() {
     formData.append("dataType", dataType);
 
     if (dataType === "text") {
+      if (!text.trim()) {
+        alert("Please enter text");
+        setLoading(false);
+        return;
+      }
       formData.append("text", text);
     } else {
       if (!file) {
@@ -22,32 +27,54 @@ export default function UploadClient() {
         setLoading(false);
         return;
       }
+
+      // 🔥 OPTIONAL CLIENT VALIDATION
+      const fileText = await file.text();
+      const rows = fileText.split("\n");
+
+      if (rows.length < 3) {
+        alert("CSV must have at least 3 rows");
+        setLoading(false);
+        return;
+      }
+
       formData.append("file", file);
     }
 
-    const res = await fetch("/api/analyze", {
-      method: "POST",
-      body: formData,
-    });
-    
-    const data = await res.json(); // 👈 get response
-    
-    console.log("API RESPONSE:", data); // 👈 DEBUG
-    
-    if (!res.ok) {
-      alert("Error: " + (data.error || JSON.stringify(data)));
-      setLoading(false);
-      return;
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      console.log("API RESPONSE:", data);
+
+      // ❌ ERROR FROM BACKEND (FastAPI validation)
+      if (!res.ok) {
+        alert("Error: " + (data.error || data.detail || "Unknown error"));
+        setLoading(false);
+        return;
+      }
+
+      // ✅ SUCCESS
+      alert("Analysis completed successfully!");
+      window.location.href = "/dashboard";
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
     }
 
-    // after success → dashboard
-    window.location.href = "/dashboard";
+    setLoading(false);
   }
 
   return (
     <div className="max-w-3xl space-y-6">
       <h2 className="text-2xl font-bold">Upload Data for AI Analysis</h2>
 
+      {/* DATA TYPE */}
       <select
         value={dataType}
         onChange={(e) => setDataType(e.target.value)}
@@ -58,6 +85,7 @@ export default function UploadClient() {
         <option value="timeseries">Time Series (CSV)</option>
       </select>
 
+      {/* TEXT INPUT */}
       {dataType === "text" && (
         <textarea
           className="w-full border p-4 rounded"
@@ -68,6 +96,7 @@ export default function UploadClient() {
         />
       )}
 
+      {/* FILE INPUT */}
       {dataType !== "text" && (
         <input
           type="file"
@@ -76,10 +105,11 @@ export default function UploadClient() {
         />
       )}
 
+      {/* BUTTON */}
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="bg-black text-white px-6 py-3 rounded"
+        className="bg-black text-white px-6 py-3 rounded w-full"
       >
         {loading ? "Analyzing..." : "Analyze"}
       </button>
