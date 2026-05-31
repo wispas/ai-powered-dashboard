@@ -5,8 +5,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Link from "next/link";
 import DeletePropertyButton from "@/components/properties/DeletePropertyButton";
 
-
-
 export default async function PropertiesPage() {
   const session = await getServerSession(authOptions);
 
@@ -48,23 +46,25 @@ export default async function PropertiesPage() {
             </thead>
 
             <tbody>
-              {properties.map((p) => (
+              {properties.map((p: any) => (
                 <tr key={p.id} className="border-b last:border-0">
                   <Td>{p.name}</Td>
                   <Td>{p.city}</Td>
                   <Td>{p.riskScore}</Td>
                   <Td>₹{p.value.toLocaleString()}</Td>
+
                   <Td>
-                        <div className="flex gap-3">
-                        <Link href={`/properties/${p.id}/edit`} className="text-blue-600">
-                            Edit
-                        </Link>
+                    <div className="flex gap-3">
+                      <Link
+                        href={`/properties/${p.id}/edit`}
+                        className="text-blue-600"
+                      >
+                        Edit
+                      </Link>
 
-
-                            <DeletePropertyButton id={p.id} />
-                        </div>
-                    </Td>
-
+                      <DeletePropertyButton id={p.id} />
+                    </div>
+                  </Td>
                 </tr>
               ))}
             </tbody>
@@ -92,5 +92,3 @@ function Td({ children }: { children: React.ReactNode }) {
     </td>
   );
 }
-
-
