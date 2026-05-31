@@ -9,7 +9,9 @@ export default async function AdminUsersPage() {
     include: {
       analyses: true,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return (
@@ -22,7 +24,7 @@ export default async function AdminUsersPage() {
             <tr>
               <Th>Email</Th>
               <Th>Role</Th>
-              <Th>Status</Th> {/* ✅ NEW */}
+              <Th>Status</Th>
               <Th>Analyses</Th>
               <Th>Joined</Th>
               <Th>Actions</Th>
@@ -30,7 +32,7 @@ export default async function AdminUsersPage() {
           </thead>
 
           <tbody>
-            {users.map((u) => (
+            {users.map((u: any) => (
               <tr key={u.id} className="border-b last:border-0">
                 <Td>{u.email}</Td>
 
@@ -38,19 +40,18 @@ export default async function AdminUsersPage() {
                   <RoleBadge role={u.role} />
                 </Td>
 
-                {/* ✅ STATUS */}
                 <Td>
                   <StatusBadge status={u.status} />
                 </Td>
 
-                {/* ✅ USER STATS */}
                 <Td>
                   {u.analyses.length} datasets
+
                   <div className="text-xs text-gray-500">
                     Avg Risk:{" "}
                     {(
                       u.analyses.reduce(
-                        (sum, a) => sum + a.riskScore,
+                        (sum: number, a: any) => sum + a.riskScore,
                         0
                       ) / (u.analyses.length || 1)
                     ).toFixed(2)}
@@ -59,7 +60,6 @@ export default async function AdminUsersPage() {
 
                 <Td>{u.createdAt.toLocaleDateString()}</Td>
 
-                {/* ✅ ACTIONS */}
                 <Td>
                   <SuspendUserButton
                     userId={u.id}
