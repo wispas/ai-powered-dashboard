@@ -1,20 +1,22 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const oauthError = searchParams.get("error");
+  const [oauthError, setOauthError] = useState<string | null>(null);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
 
- 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setOauthError(params.get("error"));
+  }, []);
+
   const getOAuthErrorMessage = (error: string) => {
     switch (error) {
       case "OAuthAccountNotLinked":
@@ -58,14 +60,12 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto mt-20 bg-white p-6 rounded-xl shadow">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-    
       {oauthError && (
         <div className="mb-4 rounded-lg border border-red-500 bg-red-500/10 px-4 py-2 text-sm text-red-600">
           {getOAuthErrorMessage(oauthError)}
         </div>
       )}
 
-    
       {formError && (
         <div className="mb-4 rounded-lg border border-red-500 bg-red-500/10 px-4 py-2 text-sm text-red-600">
           {formError}
@@ -75,6 +75,7 @@ export default function LoginPage() {
       <input
         className="w-full border p-3 mb-3 rounded"
         placeholder="Email"
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -95,22 +96,14 @@ export default function LoginPage() {
         {loading ? "Logging in..." : "Login"}
       </button>
 
-      {/* Divider */}
       <div className="my-4 text-center text-sm text-gray-400">
         or
       </div>
 
-      {/* Google Login */}
       <button
         onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-        className="w-full flex items-center justify-center gap-3
-                   rounded-lg border border-gray-300 bg-white px-4 py-2.5
-                   text-sm font-medium text-gray-700
-                   hover:bg-gray-50 hover:shadow-sm
-                   active:scale-[0.98]
-                   transition"
+        className="w-full flex items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:shadow-sm active:scale-[0.98] transition"
       >
-        {/* Google Icon */}
         <svg width="18" height="18" viewBox="0 0 48 48">
           <path fill="#EA4335" d="M24 9.5c3.15 0 5.95 1.08 8.16 2.85l6.08-6.08C34.65 2.55 29.7 0 24 0 14.6 0 6.47 5.38 2.55 13.22l7.06 5.48C11.37 13.16 17.17 9.5 24 9.5z"/>
           <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.22-.43-4.75H24v9h12.7c-.55 3-2.23 5.54-4.75 7.25l7.3 5.68C43.86 37.36 46.5 31.45 46.5 24.5z"/>
@@ -122,8 +115,11 @@ export default function LoginPage() {
       </button>
 
       <p className="text-sm text-center text-gray-600 mt-4">
-        Don’t have an account?{" "}
-        <Link href="/register" className="text-black font-medium hover:underline">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/register"
+          className="text-black font-medium hover:underline"
+        >
           Register
         </Link>
       </p>
