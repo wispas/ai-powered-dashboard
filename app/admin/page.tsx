@@ -2,6 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/adminGuard";
 import Link from "next/link";
 
+type CardProps = {
+  title: string;
+  value: string | number;
+};
+
 export default async function AdminPage() {
   await requireAdmin();
 
@@ -23,7 +28,9 @@ export default async function AdminPage() {
   const totalAnalyses = await prisma.analysis.count();
 
   const avgRisk = await prisma.analysis.aggregate({
-    _avg: { riskScore: true },
+    _avg: {
+      riskScore: true,
+    },
   });
 
   const datasetTypes = await prisma.analysis.groupBy({
@@ -57,11 +64,16 @@ export default async function AdminPage() {
               <th className="py-2">Count</th>
             </tr>
           </thead>
+
           <tbody>
-            {datasetTypes.map((d) => (
+            {datasetTypes.map((d: any) => (
               <tr key={d.dataType} className="border-b">
                 <td className="py-2">{d.dataType}</td>
-                <td className="py-2">{d._count}</td>
+                <td className="py-2">
+                  {typeof d._count === "object"
+                    ? JSON.stringify(d._count)
+                    : d._count}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -86,7 +98,7 @@ export default async function AdminPage() {
 
 /* ---------- UI ---------- */
 
-function Card({ title, value }: any) {
+function Card({ title, value }: CardProps) {
   return (
     <div className="bg-white p-4 rounded-xl shadow">
       <p className="text-sm text-gray-500">{title}</p>
